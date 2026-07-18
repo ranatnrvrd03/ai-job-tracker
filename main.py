@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.openapi.docs import get_swagger_ui_html
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from services.ai_service import AIService
 from db.models import init_db
@@ -45,14 +46,84 @@ class CVText(BaseModel):
 
 @app.get("/docs", include_in_schema=False)
 async def custom_swagger_ui_html():
-    return get_swagger_ui_html(
+    # Orijinal ve stabil Swagger assetlerini yükliyoruz
+    html = get_swagger_ui_html(
         openapi_url=app.openapi_url,
         title=app.title + " - API UI",
         oauth2_redirect_url=app.swagger_ui_oauth2_redirect_url,
         swagger_js_url="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js",
-        # Çok daha yumuşak, minimalist ve modern FlatTop teması
-        swagger_css_url="https://cdn.jsdelivr.net/npm/swagger-ui-themes@3.0.1/themes/3.x/theme-flattop.css"
+        swagger_css_url="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css"
     )
+    
+    # Tamamen kontrollü, yumuşak geçişli ve geniş boşluklu modern tasarım kodlarımız
+    custom_css = """
+    <style>
+        body {
+            background-color: #f8fafc !important;
+            font-family: 'Inter', sans-serif !important;
+        }
+        .swagger-ui {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        /* Başlık Alanı Düzenlemesi */
+        .swagger-ui .info {
+            margin: 20px 0 40px 0 !important;
+        }
+        .swagger-ui .info .title {
+            font-size: 32px !important;
+            color: #0f172a !important;
+            font-weight: 700 !important;
+        }
+        /* Kategori Başlıkları */
+        .swagger-ui .opblock-tag {
+            font-size: 18px !important;
+            font-weight: 600 !important;
+            color: #1e293b !important;
+            border-bottom: 1px solid #e2e8f0 !important;
+            padding-bottom: 10px !important;
+            margin-bottom: 20px !important;
+        }
+        /* Kartlar / Butonlar Arası Net Nefes Boşluğu */
+        .swagger-ui .opblock {
+            margin: 0 0 20px 0 !important;
+            border-radius: 12px !important;
+            border: 1px solid #e2e8f0 !important;
+            background-color: #ffffff !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+            transition: all 0.25s ease !important; /* İstenen yumuşak geçiş efekti */
+        }
+        /* Hover Durumunda Yumuşak Yükselme Efekti */
+        .swagger-ui .opblock:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05) !important;
+        }
+        /* Endpoint Satır İçi İç Boşlukları (Padding) */
+        .swagger-ui .opblock .opblock-summary {
+            padding: 14px 20px !important;
+        }
+        /* HTTP Metot Butonları (GET/POST) */
+        .swagger-ui .opblock .opblock-summary-method {
+            border-radius: 8px !important;
+            font-weight: 700 !important;
+            min-width: 85px !important;
+            text-align: center !important;
+            padding: 6px 12px !important;
+        }
+        /* Şemalar Bölümü Kart Tasarımı */
+        .swagger-ui .model-box {
+            border-radius: 10px !important;
+            padding: 15px !important;
+            background-color: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+        }
+    </style>
+    """
+    
+    # Yazdığımız CSS stilini HTML kodunun içerisine enjekte ediyoruz
+    html_content = html.body.decode("utf-8").replace("</head>", f"{custom_css}</head>")
+    return HTMLResponse(content=html_content, status_code=200)
 
 @app.get("/", tags=["Sistem Kontrolleri"])
 def read_root():
