@@ -5,7 +5,6 @@ from services.ai_service import AIService
 from db.models import init_db
 from db.repository import insert_job, get_similar_jobs
 
-# Dokümantasyon gruplarını ve açıklamalarını tanımlıyoruz
 tags_metadata = [
     {
         "name": "Sistem Kontrolleri",
@@ -26,7 +25,7 @@ app = FastAPI(
     description="RAG destekli akıllı iş ilanı ve yetenek takip sistemi",
     version="0.1.0",
     openapi_tags=tags_metadata,
-    docs_url=None,  # Varsayılan standart beyaz sayfayı devre dışı bırakıyoruz
+    docs_url=None,
     redoc_url=None
 )
 
@@ -44,7 +43,6 @@ class JobCreate(BaseModel):
 class CVText(BaseModel):
     text: str
 
-# Özelleştirilmiş, şık temalı dokümantasyon endpoint'imiz
 @app.get("/docs", include_in_schema=False)
 async def custom_swagger_ui_html():
     return get_swagger_ui_html(
@@ -52,8 +50,8 @@ async def custom_swagger_ui_html():
         title=app.title + " - API UI",
         oauth2_redirect_url=app.swagger_ui_oauth2_redirect_url,
         swagger_js_url="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js",
-        # CDN üzerinden harika bir Material/Dark teması giydiriyoruz
-        swagger_css_url="https://cdn.jsdelivr.net/npm/swagger-ui-themes@3.0.1/themes/3.x/theme-material.css"
+        # Çok daha yumuşak, minimalist ve modern FlatTop teması
+        swagger_css_url="https://cdn.jsdelivr.net/npm/swagger-ui-themes@3.0.1/themes/3.x/theme-flattop.css"
     )
 
 @app.get("/", tags=["Sistem Kontrolleri"])
